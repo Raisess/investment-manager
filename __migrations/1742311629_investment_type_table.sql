@@ -14,4 +14,5 @@ INSERT INTO investment_types(name, code, color) VALUES
   ('Tesouro Direto', 'TESOURO', 'e3a90b'),
   ('Ações', 'VAR', 'ec172b'),
   ('Cryptomoeda', 'CRYPTO', '0bb1e3'),
-  ('Fundo de investimento', 'FUNDO', '0a0a0a');
+  ('Fundo de investimento', 'FUNDO', '0a0a0a'),
+  ('Saldo + CDI', 'SALDO', '21c25e');

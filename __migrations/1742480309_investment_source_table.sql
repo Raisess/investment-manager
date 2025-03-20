@@ -8,7 +8,13 @@ CREATE TABLE IF NOT EXISTS investment_sources(
 );
 
 INSERT INTO investment_sources(name, code, logo) VALUES
-  ('Banco Inter', 'Inter', 'banco-inter.png'),
   ('Banco do Brasil', 'BB', 'banco-do-brasil.png'),
   ('Caixa Econômica Federal', 'CAIXA', 'caixa.png'),
+  ('Banco Inter', 'Inter', 'banco-inter.png'),
+  ('Itaú Unibanco', 'Itaú', 'itau.png'),
+  ('XP Investimentos', 'XP', 'xp.png'),
+  ('BTG Pactual', 'BTG', 'btg.png'),
+  ('Nubank', 'Nu', 'nubank.png'),
+  ('PicPay', 'PicPay', 'picpay.png'),
+  ('Binance', 'Binance', 'binance.png'),
   ('Ripio', 'Ripio', 'ripio.jpg');
