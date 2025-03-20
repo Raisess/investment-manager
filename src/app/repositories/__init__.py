@@ -1,0 +1,8 @@
+# Import your repositories here
+
+from app.repositories.user import UserRepository
+from app.repositories.investment import InvestmentRepository
+from app.repositories.investment_type import InvestmentTypeRepository
+from app.repositories.investment_type import InvestmentTypeRepository
+from app.repositories.investment_rentability import InvestmentRentabilityRepository
+from app.repositories.investment_source import InvestmentSourceRepository
