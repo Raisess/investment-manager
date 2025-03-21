@@ -1,14 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>My Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <title>Inicio | Investment Manager</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   </head>
   <body>
-    <a href="/auth/signin">Login</a>
+    <header class="border-bottom">
+      <nav class="navbar navbar-expand-lg py-3">
+        <div class="container px-5">
+          <a class="navbar-brand" href="/"><span class="fw-bolder">Investment Manager</span></a>
+
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 fw-bolder">
+              <li class="nav-item"><a class="nav-link" href="#support">Suporte</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="py-5 mt-5">
+      <div class="container px-5 pb-5">
+        <div class="row gx-5 align-items-center">
+          <div class="col-xxl-5">
+            <div class="text-center text-xxl-start">
+              <div class="fs-3 fw-light text-muted">Seus investimentos organizados de forma simples</div>
+              <h1 class="display-3 fw-bolder mb-5"><span class="text-gradient d-inline">Não perca nada de vista!</span></h1>
+              <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
+                <a href="/auth/signin">
+                  <button class="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder" type="submit">
+                    <i class="bi bi-google"></i>
+                    <span class="ms-1">Entrar com Google</span>
+                  </button>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-7">
+            <div class="d-flex justify-content-center mt-5 mt-xxl-0">
+              <div class="profile bg-gradient-primary-to-secondary">
+                <img class="rounded img-fluid shadow" src="/assets/dash.png" alt="Dashboard image">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </body>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.bundle.min.js"></script>
 </html>

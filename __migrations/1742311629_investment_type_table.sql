@@ -8,11 +8,10 @@ CREATE TABLE IF NOT EXISTS investment_types(
 );
 
 INSERT INTO investment_types(name, code, color) VALUES
-  ('Poupança', 'POP', '217ac8'),
-  ('Certificado de Depósito Bancário', 'CDB', 'a2428e'),
-  ('Letra de Crédito', 'LCI/LCA/LCD', '46ae13'),
+  ('Poupança', 'POUPANÇA', '217ac8'),
+  ('Renda Fixa', 'RENDA FIXA', '46ae13'),
+  ('Renda Variável', 'VARIÁVEL', 'ec172b'),
   ('Tesouro Direto', 'TESOURO', 'e3a90b'),
-  ('Ações', 'VAR', 'ec172b'),
-  ('Cryptomoeda', 'CRYPTO', '0bb1e3'),
+  ('Cryptomoeda', 'CRYPTO', 'f47b0f'),
   ('Fundo de investimento', 'FUNDO', '0a0a0a'),
   ('Saldo + CDI', 'SALDO', '21c25e');
