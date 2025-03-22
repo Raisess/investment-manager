@@ -45,9 +45,9 @@
               <select class="form-control" name="source" required>
                 {% for investment_source in investment_sources %}
                   {% if investment.source_id == investment_source.id %}
-                    <option selected="selected" value="{{ investment_source.id }}">{{ investment_source.name }} ({{ investment_source.code }})</option>
+                    <option selected="selected" value="{{ investment_source.id }}">{{ investment_source.name }}</option>
                   {% else %}
-                    <option value="{{ investment_source.id }}">{{ investment_source.name }} ({{ investment_source.code }})</option>
+                    <option value="{{ investment_source.id }}">{{ investment_source.name }}</option>
                   {% endif %}
                 {% endfor %}
               </select>
