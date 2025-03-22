@@ -7,6 +7,9 @@ from app.services.google import GoogleService
 class UserController(Controller):
   def post_authentication(self) -> None:
     session = self.session()
+    if session.get("user_id"):
+      return self.redirect("/user/validate_auth")
+
     access_token = session.get("google_access_token")
     if not access_token:
       return self.redirect("/")
