@@ -31,8 +31,8 @@ class InvestmentController(Controller):
 
     return self.render("/investment/dashboard", {
       "investments": investments,
-      "invested": invested,
-      "total": total,
+      "invested": round(invested, 2),
+      "total": round(total, 2),
       "user": user,
     })
 
