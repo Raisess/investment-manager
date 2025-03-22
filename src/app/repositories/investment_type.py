@@ -1,3 +1,4 @@
+from __core.plugins.cache.memory import Memory
 from __core.plugins.database.sql.postgresql import PostgreSQL
 from __core.repository import Repository
 
@@ -7,10 +8,17 @@ class InvestmentTypeRepository(Repository):
   def __init__(self):
     self.__table = "investment_types"
     self.__database = PostgreSQL()
+    self.__cache = Memory()
 
   def find(self) -> list[InvestmentTypeModel]:
+    data = self.__cache.read_json("InvestmentTypeRepository::find")
+    if data:
+      return data
+
     results = self.__database.select(self.__table, {})
-    return [InvestmentTypeRepository.__format(item) for item in results]
+    data = [InvestmentTypeRepository.__format(item) for item in results]
+    self.__cache.write_json("InvestmentTypeRepository::find", data)
+    return data
 
   @staticmethod
   def __format(data: dict) -> InvestmentTypeModel:
