@@ -9,7 +9,7 @@ class UserController(Controller):
     session = self.session()
     access_token = session.get("google_access_token")
     if not access_token:
-      raise Exception("Not authenticated")
+      return self.redirect("/")
 
     google_profile_data = GoogleService.GetProfileInfo(access_token)
 
@@ -20,7 +20,7 @@ class UserController(Controller):
         name=google_profile_data.get("name"),
         email=google_profile_data.get("email"),
         picture=google_profile_data.get("picture"),
-        status=1
+        status=0,
       )
       user_repository.create(user)
 

@@ -15,7 +15,7 @@ class InvestmentController(Controller):
   def dashboard(self) -> str:
     user_id = self.session().get("user_id")
     if not user_id:
-      raise Exception("Not authenticated")
+      return self.redirect("/")
 
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
@@ -39,7 +39,7 @@ class InvestmentController(Controller):
   def create_view(self) -> str:
     user_id = self.session().get("user_id")
     if not user_id:
-      raise Exception("Not authenticated")
+      return self.redirect("/")
 
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
@@ -63,7 +63,7 @@ class InvestmentController(Controller):
   def create(self) -> None:
     user_id = self.session().get("user_id")
     if not user_id:
-      raise Exception("Not authenticated")
+      return self.redirect("/")
 
     request = self.request()
     form = request.form()
@@ -86,7 +86,7 @@ class InvestmentController(Controller):
   def edit_view(self, id: str) -> str:
     user_id = self.session().get("user_id")
     if not user_id:
-      raise Exception("Not authenticated")
+      return self.redirect("/")
 
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
@@ -114,7 +114,7 @@ class InvestmentController(Controller):
   def edit(self, id: str) -> None:
     user_id = self.session().get("user_id")
     if not user_id:
-      raise Exception("Not authenticated")
+      return self.redirect("/")
 
     from datetime import datetime
 
@@ -139,7 +139,7 @@ class InvestmentController(Controller):
   def delete(self, id: str) -> None:
     user_id = self.session().get("user_id")
     if not user_id:
-      raise Exception("Not authenticated")
+      return self.redirect("/")
 
     investment_repository = InvestmentRepository()
     investment_repository.remove_one(user_id, id)
