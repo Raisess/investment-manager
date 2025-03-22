@@ -12,6 +12,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN rm .env.example
+RUN rm -rf __migrations
+
 EXPOSE 8080/tcp
 
-CMD ["PRODUCTION=1", "python", "./src/wsgi.py", "8080", "0.0.0.0"]
+CMD ["python", "./src/wsgi.py", "8080", "0.0.0.0"]
