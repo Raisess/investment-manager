@@ -1,3 +1,5 @@
+import datetime
+import json
 import html
 
 from __core.controller import Controller
@@ -145,3 +147,15 @@ class InvestmentController(Controller):
     investment_repository.remove_one(user_id, id)
 
     return self.redirect("/investment/dashboard")
+
+  def export(self) -> None:
+    user_id = self.session().get("user_id")
+    if not user_id:
+      return self.redirect("/")
+
+    investment_repository = InvestmentRepository()
+    investments = investment_repository.find(user_id)
+    dicts = [investment.to_dict() for investment in investments]
+
+    date = datetime.datetime.now().strftime("%Y-%m-%d")
+    return self.download(f"report_{date}.json", json.dumps(dicts))
