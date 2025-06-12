@@ -33,7 +33,7 @@ def delete(id: str):
   return controller.delete(id)
 
 
-@routes.get("/investment/import")
+@routes.post("/investment/import")
 def import_():
   return controller.import_()
 

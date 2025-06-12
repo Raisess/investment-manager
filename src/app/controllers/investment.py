@@ -149,7 +149,35 @@ class InvestmentController(Controller):
     return self.redirect("/investment/dashboard")
 
   def import_(self) -> None:
-    raise NotImplemented()
+    user_id = self.session().get("user_id")
+    if not user_id:
+      return self.redirect("/")
+
+    form = self.request().form()
+    data = form.get("data")
+    if not data:
+      raise Exception("Invalid file content")
+
+    investment_repository = InvestmentRepository()
+    for item in json.loads(data):
+      try:
+        investment_repository.create(InvestmentModel(
+          user_id=user_id,
+          id=item.get("id"),
+          type_id=item.get("type_id"),
+          source_id=item.get("source_id"),
+          name=html.escape(item.get("name")),
+          invested=item.get("invested"),
+          total=item.get("total"),
+          maturity=item.get("maturity"),
+          rentability_id=item.get("rentability_id"),
+          rentability_number=item.get("rentability_number"),
+        ))
+      except:
+        print(f"Failed to insert item: {item.get("id")} already exists")
+
+    # @NOTE: already refreshing using javascript
+    return self.redirect("/investment/dashboard")
 
   def export(self) -> None:
     user_id = self.session().get("user_id")
