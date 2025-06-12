@@ -37,7 +37,8 @@ class UserController(Controller):
     session.clear()
 
     user_repository = UserRepository()
-    user = user_repository.find_one({ "email": email, "status": 1 })
+    #user = user_repository.find_one({ "email": email, "status": 1 })
+    user = user_repository.find_one({ "email": email })
     if not user:
       # @TODO: redirect to payment session
       raise Exception("Invalid user")
