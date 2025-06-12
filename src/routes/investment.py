@@ -32,6 +32,12 @@ def edit(id: str):
 def delete(id: str):
   return controller.delete(id)
 
+
+@routes.get("/investment/import")
+def import_():
+  return controller.import_()
+
+
 @routes.get("/investment/export")
 def export():
   return controller.export()

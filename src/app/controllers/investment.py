@@ -148,6 +148,9 @@ class InvestmentController(Controller):
 
     return self.redirect("/investment/dashboard")
 
+  def import_(self) -> None:
+    raise NotImplemented()
+
   def export(self) -> None:
     user_id = self.session().get("user_id")
     if not user_id:
