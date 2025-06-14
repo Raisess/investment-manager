@@ -75,7 +75,7 @@ class InvestmentRepository(Repository):
       ),
 
       rentability_id=data.get("rentability_id"),
-      rentability_number=float(data.get("rentability_number")),
+      rentability_number=float(data.get("rentability_number")) if data.get("rentability_number") else None,
       fk_rentability=InvestmentRentabilityModel(
         name=data.get("fk_rentability_name"),
       ) if data.get("rentability_id") else None,
