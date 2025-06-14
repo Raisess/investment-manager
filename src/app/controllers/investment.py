@@ -22,8 +22,13 @@ class InvestmentController(Controller):
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
 
+    args = self.request().args()
+    page = int(args.get("page")) if args.get("page") else 1
+    limit = int(args.get("limit")) if args.get("limit") else 15
+
     investment_repository = InvestmentRepository()
-    investments = investment_repository.find(user_id)
+    investments = investment_repository.find(user_id, page, limit)
+    count = investment_repository.count(user_id)
 
     invested = 0
     total = 0
@@ -32,6 +37,9 @@ class InvestmentController(Controller):
       total += item.total
 
     return self.render("/investment/dashboard", {
+      "limit": limit,
+      "page": page,
+      "count": count,
       "investments": investments,
       "invested": round(invested, 2),
       "total": round(total, 2),
@@ -186,6 +194,7 @@ class InvestmentController(Controller):
 
     investment_repository = InvestmentRepository()
     investments = investment_repository.find(user_id)
+    # @TODO: obfuscate some data: `user_id`
     dicts = [investment.to_dict() for investment in investments]
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")

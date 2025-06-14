@@ -17,7 +17,7 @@ class InvestmentRepository(Repository):
     self.__database.insert(self.__table, data.to_dict())
     return data.id
 
-  def find(self, user_id: str) -> list[InvestmentModel]:
+  def find(self, user_id: str, page: int, limit: int) -> list[InvestmentModel]:
     query = f"""
       SELECT
         main_table.*,
@@ -33,10 +33,17 @@ class InvestmentRepository(Repository):
         INNER JOIN investment_sources AS fk_source ON fk_source.id = source_id
         LEFT OUTER JOIN investment_rentabilities AS fk_rentability ON fk_rentability.id = rentability_id
       WHERE user_id = %(user_id)s
-      ORDER BY updated_at DESC;
+      ORDER BY updated_at DESC
+      LIMIT {limit}
+      OFFSET {(page - 1) * limit};
     """
     results = self.__database.query(query, { "user_id": user_id })
     return [InvestmentRepository.__format(item) for item in results]
+
+  def count(self, user_id: str) -> int:
+    query = f"SELECT COUNT(1) FROM {self.__table} WHERE user_id = %(user_id)s;"
+    results = self.__database.plain(query, { "user_id": user_id })
+    return results[0]
 
   def find_one(self, user_id: str, id: str) -> InvestmentModel | None:
     result = self.__database.select(self.__table, { "id": id, "user_id": user_id })

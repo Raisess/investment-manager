@@ -115,6 +115,20 @@
             </tbody>
           </table>
         </div>
+        <div class="d-flex flex-row justify-content-end pb-5">
+          <div class="d-flex flex-row gap-2">
+            {% if page > 1 %}
+              <div>
+                <a href="/investment/dashboard?page={{ page - 1 }}"><button class="btn btn-primary">Anterior</button></a>
+              </div>
+            {% endif %}
+            {% if page * limit < count %}
+              <div>
+                <a href="/investment/dashboard?page={{ page + 1 }}"><button class="btn btn-primary">Proximo</button></a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </main>
   </body>
