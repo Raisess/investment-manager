@@ -1,6 +1,7 @@
 import datetime
 import json
 import html
+import math
 
 from __core.controller import Controller
 
@@ -22,14 +23,21 @@ class InvestmentController(Controller):
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
 
+    investment_repository = InvestmentRepository()
+    consolidated = investment_repository.consolidated(user_id)
+
     args = self.request().args()
     page = int(args.get("page")) if args.get("page") else 1
     limit = int(args.get("limit")) if args.get("limit") else 15
 
-    investment_repository = InvestmentRepository()
-    investments = investment_repository.find(user_id, page, limit)
-    consolidated = investment_repository.consolidated(user_id)
+    if limit > 15:
+      limit = 15
 
+    max_page = math.ceil(consolidated.get("count") / limit)
+    if page > max_page:
+      page = max_page
+
+    investments = investment_repository.find(user_id, page, limit)
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
