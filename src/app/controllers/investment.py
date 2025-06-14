@@ -28,21 +28,15 @@ class InvestmentController(Controller):
 
     investment_repository = InvestmentRepository()
     investments = investment_repository.find(user_id, page, limit)
-    count = investment_repository.count(user_id)
-
-    invested = 0
-    total = 0
-    for item in investments:
-      invested += item.invested
-      total += item.total
+    consolidated = investment_repository.consolidated(user_id)
 
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
-      "count": count,
+      "count": consolidated.get("count"),
       "investments": investments,
-      "invested": round(invested, 2),
-      "total": round(total, 2),
+      "invested": round(consolidated.get("invested"), 2),
+      "total": round(consolidated.get("total"), 2),
       "user": user,
     })
 

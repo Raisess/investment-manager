@@ -40,9 +40,9 @@ class InvestmentRepository(Repository):
     results = self.__database.query(query, { "user_id": user_id })
     return [InvestmentRepository.__format(item) for item in results]
 
-  def count(self, user_id: str) -> int:
-    query = f"SELECT COUNT(1) FROM {self.__table} WHERE user_id = %(user_id)s;"
-    results = self.__database.plain(query, { "user_id": user_id })
+  def consolidated(self, user_id: str) -> dict:
+    query = f"SELECT COUNT(1), SUM(invested) AS invested, SUM(total) AS total FROM {self.__table} WHERE user_id = %(user_id)s;"
+    results = self.__database.query(query, { "user_id": user_id })
     return results[0]
 
   def find_one(self, user_id: str, id: str) -> InvestmentModel | None:
