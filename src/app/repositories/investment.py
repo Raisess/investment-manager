@@ -17,7 +17,7 @@ class InvestmentRepository(Repository):
     self.__database.insert(self.__table, data.to_dict())
     return data.id
 
-  def find(self, user_id: str, page: int, limit: int) -> list[InvestmentModel]:
+  def find(self, user_id: str, page: int = None, limit: int = None) -> list[InvestmentModel]:
     query = f"""
       SELECT
         main_table.*,
@@ -34,9 +34,14 @@ class InvestmentRepository(Repository):
         LEFT OUTER JOIN investment_rentabilities AS fk_rentability ON fk_rentability.id = rentability_id
       WHERE user_id = %(user_id)s
       ORDER BY updated_at DESC
-      LIMIT {limit}
-      OFFSET {(page - 1) * limit};
     """
+
+    if limit:
+      query += f"\nLIMIT {limit}"
+
+    if page and limit:
+      query += f"\nOFFSET {(page - 1) * limit}"
+
     results = self.__database.query(query, { "user_id": user_id })
     return [InvestmentRepository.__format(item) for item in results]
 
