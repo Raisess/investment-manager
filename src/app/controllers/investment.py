@@ -123,6 +123,10 @@ class InvestmentController(Controller):
       "user": user,
     })
 
+  # @TODO: create a new table to store week info for the investment,
+  # and only insert if the week changes, check the week of last change if
+  # its later on time and a different week create a new record on the `investment_changes`
+  # if its the first update and do not a have a change yet, just create a new one
   def edit(self, id: str) -> None:
     user_id = self.session().get("user_id")
     if not user_id:
@@ -158,6 +162,8 @@ class InvestmentController(Controller):
 
     return self.redirect("/investment/dashboard")
 
+  # @TODO: generate a new id and create a unique index to fail when
+  # try to create the same investment twice
   def import_(self) -> None:
     user_id = self.session().get("user_id")
     if not user_id:
@@ -186,7 +192,7 @@ class InvestmentController(Controller):
       except:
         print(f"Failed to insert item: {item.get("id")} already exists")
 
-    # @NOTE: already refreshing using javascript
+    # @BUGFIX: already refreshing using javascript
     return self.redirect("/investment/dashboard")
 
   def export(self) -> None:

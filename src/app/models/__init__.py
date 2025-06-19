@@ -6,3 +6,4 @@ from app.models.investment import InvestmentModel
 from app.models.investment_type import InvestmentTypeModel
 from app.models.investment_rentability import InvestmentRentabilityModel
 from app.models.investment_source import InvestmentSourceModel
+from app.models.investment_change import InvestmentChangeModel

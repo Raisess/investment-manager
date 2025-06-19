@@ -6,3 +6,4 @@ from app.repositories.investment_type import InvestmentTypeRepository
 from app.repositories.investment_type import InvestmentTypeRepository
 from app.repositories.investment_rentability import InvestmentRentabilityRepository
 from app.repositories.investment_source import InvestmentSourceRepository
+from app.repositories.investment_change import InvestmentChangeRepository
