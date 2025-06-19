@@ -15,6 +15,8 @@ class InvestmentModel(model.Model):
   total: float = None
   maturity: str = None
 
+  fk_change: float = None
+
   type_id: str = None
   fk_type: InvestmentTypeModel = None
 

@@ -21,6 +21,10 @@ class InvestmentRepository(Repository):
     query = f"""
       SELECT
         main_table.*,
+        COALESCE(
+          (SELECT SUM(change) FROM investment_changes WHERE investment_id = main_table.id),
+          0
+        ) AS fk_change,
         fk_type.name AS fk_type_name,
         fk_type.code AS fk_type_code,
         fk_type.color AS fk_type_color,
@@ -71,6 +75,8 @@ class InvestmentRepository(Repository):
       invested=float(data.get("invested")),
       total=float(data.get("total")),
       maturity=str(data.get("maturity")) if data.get("maturity") else None,
+
+      fk_change=float(data.get("fk_change")) if data.get("fk_change") else 0,
 
       type_id=data.get("type_id"),
       fk_type=InvestmentTypeModel(

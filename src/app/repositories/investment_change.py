@@ -15,10 +15,14 @@ class InvestmentChangeRepository(Repository):
   def update(self, id: str, new_data: InvestmentChangeModel) -> None:
     self.__database.update(self.__table, { "id": id }, new_data.to_dict())
 
-  def find(self, filter: dict) -> list[InvestmentChangeModel]:
-    results = self.__database.select(self.__table, filter)
-    data = [InvestmentChangeRepository.__format(item) for item in results]
-    return data
+  def find_one(self, investment_id: str) -> InvestmentChangeModel | None:
+    results = self.__database.select(
+      table=self.__table,
+      where={ "investment_id": investment_id },
+      order_by={ "created_at": "asc" },
+      limit=1
+    )
+    return InvestmentChangeRepository.__format(results[0]) if len(results) == 1 else None
 
   @staticmethod
   def __format(data: dict) -> InvestmentChangeModel:

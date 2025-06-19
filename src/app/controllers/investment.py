@@ -1,18 +1,20 @@
-import datetime
 import json
 import html
 import math
+from datetime import datetime
 
 from __core.controller import Controller
 
-from app.models import InvestmentModel
+from app.models import InvestmentModel, InvestmentChangeModel
 from app.repositories import (
   InvestmentRepository,
+  InvestmentChangeRepository,
   InvestmentRentabilityRepository,
   InvestmentSourceRepository,
   InvestmentTypeRepository,
   UserRepository,
 )
+
 
 class InvestmentController(Controller):
   def dashboard(self) -> str:
@@ -123,22 +125,20 @@ class InvestmentController(Controller):
       "user": user,
     })
 
-  # @TODO: create a new table to store week info for the investment,
-  # and only insert if the week changes, check the week of last change if
-  # its later on time and a different week create a new record on the `investment_changes`
-  # if its the first update and do not a have a change yet, just create a new one
   def edit(self, id: str) -> None:
     user_id = self.session().get("user_id")
     if not user_id:
       return self.redirect("/")
-
-    from datetime import datetime
 
     request = self.request()
     form = request.form()
 
     investment_repository = InvestmentRepository()
     investment = investment_repository.find_one(user_id, id)
+    last_updated_at = investment.updated_at
+    last_invested_value = investment.invested
+    last_total_value = investment.total
+
     investment.updated_at = datetime.utcnow().isoformat()
     investment.name = html.escape(form.get("name"))
     investment.type_id = form.get("type")
@@ -150,6 +150,31 @@ class InvestmentController(Controller):
     investment.rentability_number = form.get("rentability_number") if form.get("rentability_type") != "None" and form.get("rentability_number") != "" else None
 
     investment_repository.update(user_id, id, investment)
+
+    investment_change_repository = InvestmentChangeRepository()
+
+    last_diff = last_total_value - last_invested_value
+    today_diff = float(investment.total) - float(investment.invested)
+    diff = today_diff - last_diff
+
+    today = datetime.now().isocalendar()
+    last_update_date = datetime.fromisoformat(last_updated_at).isocalendar()
+    if today.week > last_update_date.week:
+      investment_change_repository.create(InvestmentChangeModel(
+        investment_id=investment.id,
+        change=diff,
+      ))
+    else:
+      last_investment_change = investment_change_repository.find_one(investment.id)
+      if not last_investment_change:
+        investment_change_repository.create(InvestmentChangeModel(
+          investment_id=investment.id,
+          change=diff,
+        ))
+      else:
+        last_investment_change.change = diff
+        investment_change_repository.update(last_investment_change.id, last_investment_change)
+
     return self.redirect("/investment/dashboard")
 
   def delete(self, id: str) -> None:
@@ -202,7 +227,7 @@ class InvestmentController(Controller):
 
     investment_repository = InvestmentRepository()
     investments = investment_repository.find(user_id)
-    # @TODO: obfuscate some data: `user_id`
+    # @TODO: obfuscate some data: `user_id` and `id`
     dicts = [investment.to_dict() for investment in investments]
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
