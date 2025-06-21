@@ -72,11 +72,11 @@ class InvestmentRepository(Repository):
       updated_at=str(data.get("updated_at")),
       user_id=data.get("user_id"),
       name=data.get("name"),
-      invested=float(data.get("invested")),
-      total=float(data.get("total")),
+      invested=round(float(data.get("invested")), 2),
+      total=round(float(data.get("total")), 2),
       maturity=str(data.get("maturity")) if data.get("maturity") else None,
 
-      fk_change=float(data.get("fk_change")) if data.get("fk_change") else 0,
+      fk_change=round(float(data.get("fk_change")) if data.get("fk_change") else 0, 2),
 
       type_id=data.get("type_id"),
       fk_type=InvestmentTypeModel(
@@ -93,7 +93,7 @@ class InvestmentRepository(Repository):
       ),
 
       rentability_id=data.get("rentability_id"),
-      rentability_number=float(data.get("rentability_number")) if data.get("rentability_number") else None,
+      rentability_number=round(float(data.get("rentability_number")), 2) if data.get("rentability_number") else None,
       fk_rentability=InvestmentRentabilityModel(
         name=data.get("fk_rentability_name"),
       ) if data.get("rentability_id") else None,
