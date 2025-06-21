@@ -230,5 +230,5 @@ class InvestmentController(Controller):
     # @TODO: obfuscate some data: `user_id` and `id`
     dicts = [investment.to_dict() for investment in investments]
 
-    date = datetime.datetime.now().strftime("%Y-%m-%d")
+    date = datetime.now().strftime("%Y-%m-%d")
     return self.download(f"report_{date}.json", json.dumps(dicts))
