@@ -15,7 +15,6 @@ from app.repositories import (
   UserRepository,
 )
 
-
 class InvestmentController(Controller):
   def dashboard(self) -> str:
     user_id = self.session().get("user_id")
@@ -47,6 +46,7 @@ class InvestmentController(Controller):
       "investments": investments,
       "invested": round(consolidated.get("invested"), 2),
       "total": round(consolidated.get("total"), 2),
+      "gain": round(consolidated.get("gain"), 2),
       "user": user,
     })
 

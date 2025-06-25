@@ -1,3 +1,4 @@
+from __core.plugins.cache.memory import Memory
 from __core.plugins.database.sql.postgresql import PostgreSQL
 from __core.repository import Repository
 
@@ -12,9 +13,11 @@ class InvestmentRepository(Repository):
   def __init__(self):
     self.__table = "investments"
     self.__database = PostgreSQL()
+    self.__cache = Memory()
 
   def create(self, data: InvestmentModel) -> str:
     self.__database.insert(self.__table, data.to_dict())
+    self.__cache.remove(["InvestmentRepository::consolidated"])
     return data.id
 
   def find(self, user_id: str, page: int = None, limit: int = None) -> list[InvestmentModel]:
@@ -50,9 +53,28 @@ class InvestmentRepository(Repository):
     return [InvestmentRepository.__format(item) for item in results]
 
   def consolidated(self, user_id: str) -> dict:
-    query = f"SELECT COUNT(1), SUM(invested) AS invested, SUM(total) AS total FROM {self.__table} WHERE user_id = %(user_id)s;"
+    data = self.__cache.read_json("InvestmentRepository::consolidated")
+    if data:
+      return data
+
+    # @TODO: make gain the week gains
+    query = f"""
+      SELECT
+        COUNT(1),
+        SUM(invested) AS invested,
+        SUM(total) AS total,
+        SUM(COALESCE(
+          (SELECT SUM(change) FROM investment_changes WHERE investment_id = main_table.id), 0
+        )) AS gain
+      FROM {self.__table} AS main_table
+      WHERE
+        user_id = %(user_id)s;
+    """
     results = self.__database.query(query, { "user_id": user_id })
-    return results[0]
+    data = results[0]
+
+    self.__cache.write_json("InvestmentRepository::consolidated", data)
+    return data
 
   def find_one(self, user_id: str, id: str) -> InvestmentModel | None:
     result = self.__database.select(self.__table, { "id": id, "user_id": user_id })
@@ -60,9 +82,11 @@ class InvestmentRepository(Repository):
 
   def update(self, user_id: str, id: str, new_data: InvestmentModel) -> None:
     self.__database.update(self.__table, { "id": id, "user_id": user_id }, new_data.to_dict())
+    self.__cache.remove(["InvestmentRepository::consolidated"])
 
   def remove_one(self, user_id: str, id: str) -> None:
     self.__database.delete(self.__table, { "id": id, "user_id": user_id })
+    self.__cache.remove(["InvestmentRepository::consolidated"])
 
   @staticmethod
   def __format(data: dict) -> InvestmentModel:
