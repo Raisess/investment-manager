@@ -20,7 +20,13 @@ class InvestmentRepository(Repository):
     self.__cache.remove(["InvestmentRepository::consolidated"])
     return data.id
 
-  def find(self, user_id: str, after_date: str, page: int = None, limit: int = None) -> list[InvestmentModel]:
+  def find(
+    self,
+    user_id: str,
+    get_change_after_date: str,
+    page: int = None,
+    limit: int = None,
+  ) -> list[InvestmentModel]:
     query = f"""
       SELECT
         main_table.*,
@@ -58,12 +64,12 @@ class InvestmentRepository(Repository):
       query += f"\nOFFSET {(page - 1) * limit}"
 
     results = self.__database.query(query, {
-      "after_date": after_date,
+      "after_date": get_change_after_date,
       "user_id": user_id,
     })
     return [InvestmentRepository.__format(item) for item in results]
 
-  def consolidated(self, user_id: str, after_date: str) -> dict:
+  def consolidated(self, user_id: str, get_change_after_date: str) -> dict:
     data = self.__cache.read_json("InvestmentRepository::consolidated")
     if data:
       return data
@@ -91,7 +97,7 @@ class InvestmentRepository(Repository):
     """
 
     results = self.__database.query(query, {
-      "after_date": after_date,
+      "after_date": get_change_after_date,
       "user_id": user_id,
     })
     data = results[0]

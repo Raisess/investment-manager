@@ -161,6 +161,8 @@ class InvestmentController(Controller):
     today_diff = float(investment.total) - float(investment.invested)
     diff = today_diff - last_diff
 
+    # @FIXME: first get the investment_change for the current week, if it exists update,
+    # if not create a new one, simple and not buggy like this shit below :D
     today = datetime.now().isocalendar()
     last_update_date = datetime.fromisoformat(last_updated_at).isocalendar()
     if today.week > last_update_date.week:
