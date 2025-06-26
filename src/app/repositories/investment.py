@@ -20,12 +20,20 @@ class InvestmentRepository(Repository):
     self.__cache.remove(["InvestmentRepository::consolidated"])
     return data.id
 
-  def find(self, user_id: str, page: int = None, limit: int = None) -> list[InvestmentModel]:
+  def find(self, user_id: str, after_date: str, page: int = None, limit: int = None) -> list[InvestmentModel]:
     query = f"""
       SELECT
         main_table.*,
         COALESCE(
-          (SELECT SUM(change) FROM investment_changes WHERE investment_id = main_table.id),
+          (SELECT
+             change
+           FROM investment_changes
+           WHERE
+             investment_id = main_table.id AND
+             created_at >= %(after_date)s
+           ORDER BY
+             created_at DESC
+           LIMIT 1),
           0
         ) AS fk_change,
         fk_type.name AS fk_type_name,
@@ -49,30 +57,44 @@ class InvestmentRepository(Repository):
     if page and limit:
       query += f"\nOFFSET {(page - 1) * limit}"
 
-    results = self.__database.query(query, { "user_id": user_id })
+    results = self.__database.query(query, {
+      "after_date": after_date,
+      "user_id": user_id,
+    })
     return [InvestmentRepository.__format(item) for item in results]
 
-  def consolidated(self, user_id: str) -> dict:
+  def consolidated(self, user_id: str, after_date: str) -> dict:
     data = self.__cache.read_json("InvestmentRepository::consolidated")
     if data:
       return data
 
-    # @TODO: make gain the week gains
     query = f"""
       SELECT
         COUNT(1),
         SUM(invested) AS invested,
         SUM(total) AS total,
         SUM(COALESCE(
-          (SELECT SUM(change) FROM investment_changes WHERE investment_id = main_table.id), 0
+          (SELECT
+             change
+           FROM investment_changes
+           WHERE
+             investment_id = main_table.id AND
+             created_at >= %(after_date)s
+           ORDER BY
+             created_at DESC
+           LIMIT 1),
+          0
         )) AS gain
       FROM {self.__table} AS main_table
       WHERE
         user_id = %(user_id)s;
     """
-    results = self.__database.query(query, { "user_id": user_id })
-    data = results[0]
 
+    results = self.__database.query(query, {
+      "after_date": after_date,
+      "user_id": user_id,
+    })
+    data = results[0]
     self.__cache.write_json("InvestmentRepository::consolidated", data)
     return data
 

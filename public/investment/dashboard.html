@@ -42,7 +42,7 @@
             <h5><i class="bi bi-arrow-right"></i></h5>
             <h5>Total: R$ {{ total }}</h5>
             <h5><i class="bi bi-dash"></i></h5>
-            <h5>Ganhos: R$ {{ gain }}</h5>
+            <h5>Ganhos na semana: R$ {{ gain }}</h5>
           </div>
           <div class="d-flex flex-row gap-2">
             <div>
@@ -67,7 +67,7 @@
                 <th scope="col">Rentabilidade</th>
                 <th scope="col">Investido</th>
                 <th scope="col">Total</th>
-                <th scope="col">Var.</th>
+                <th scope="col" title="Variacao semanal do valor total">Var.</th>
                 <th scope="col">Status</th>
                 <th scope="col">Opcoes</th>
               </tr>
@@ -111,7 +111,8 @@
                     {% endif %}
                   </td>
                   <td>
-                    <a href="/investment/edit/{{ investment.id }}" class="text-primary" style="text-decoration: none !important;"><i class="bi bi-pencil-square"></i></a>
+                    <a href="/investment/chart/{{ investment.id }}" class="text-secondary" style="text-decoration: none !important;"><i class="bi bi-graph-up"></i></a>
+                    <a href="/investment/edit/{{ investment.id }}" class="ms-2 text-primary" style="text-decoration: none !important;"><i class="bi bi-pencil-square"></i></a>
                     <a href="/investment/delete/{{ investment.id }}" class="ms-2 text-danger" style="text-decoration: none !important;"><i class="bi bi-trash-fill"></i></a>
                   </td>
                 </tr>

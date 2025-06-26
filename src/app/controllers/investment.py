@@ -1,7 +1,7 @@
 import json
 import html
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from __core.controller import Controller
 
@@ -24,8 +24,12 @@ class InvestmentController(Controller):
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
 
+    now = datetime.now()
+    start_of_week = now - timedelta(days=now.weekday())
+    start_of_week_iso = start_of_week.date().isoformat()
+
     investment_repository = InvestmentRepository()
-    consolidated = investment_repository.consolidated(user_id)
+    consolidated = investment_repository.consolidated(user_id, start_of_week_iso)
 
     args = self.request().args()
     page = int(args.get("page")) if args.get("page") else 1
@@ -38,7 +42,7 @@ class InvestmentController(Controller):
     if page > max_page:
       page = max_page
 
-    investments = investment_repository.find(user_id, page, limit)
+    investments = investment_repository.find(user_id, start_of_week_iso, page, limit)
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
