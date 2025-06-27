@@ -23,7 +23,7 @@ class InvestmentRepository(Repository):
   def find(
     self,
     user_id: str,
-    get_change_after_date: str,
+    get_change_after_date: str = None,
     page: int = None,
     limit: int = None,
   ) -> list[InvestmentModel]:

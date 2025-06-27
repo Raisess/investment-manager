@@ -24,12 +24,9 @@ class InvestmentController(Controller):
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
 
-    now = datetime.now()
-    start_of_week = now - timedelta(days=now.weekday())
-    start_of_week_iso = start_of_week.date().isoformat()
-
+    start_of_week = self.__start_of_week()
     investment_repository = InvestmentRepository()
-    consolidated = investment_repository.consolidated(user_id, start_of_week_iso)
+    consolidated = investment_repository.consolidated(user_id, start_of_week)
 
     args = self.request().args()
     page = int(args.get("page")) if args.get("page") else 1
@@ -42,7 +39,7 @@ class InvestmentController(Controller):
     if page > max_page:
       page = max_page
 
-    investments = investment_repository.find(user_id, start_of_week_iso, page, limit)
+    investments = investment_repository.find(user_id, start_of_week, page, limit)
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
@@ -139,7 +136,6 @@ class InvestmentController(Controller):
 
     investment_repository = InvestmentRepository()
     investment = investment_repository.find_one(user_id, id)
-    last_updated_at = investment.updated_at
     last_invested_value = investment.invested
     last_total_value = investment.total
 
@@ -161,25 +157,16 @@ class InvestmentController(Controller):
     today_diff = float(investment.total) - float(investment.invested)
     diff = today_diff - last_diff
 
-    # @FIXME: first get the investment_change for the current week, if it exists update,
-    # if not create a new one, simple and not buggy like this shit below :D
-    today = datetime.now().isocalendar()
-    last_update_date = datetime.fromisoformat(last_updated_at).isocalendar()
-    if today.week > last_update_date.week:
+    start_of_week = self.__start_of_week()
+    last_investment_change = investment_change_repository.find_one(investment.id, start_of_week)
+    if not last_investment_change:
       investment_change_repository.create(InvestmentChangeModel(
         investment_id=investment.id,
         change=diff,
       ))
     else:
-      last_investment_change = investment_change_repository.find_one(investment.id)
-      if not last_investment_change:
-        investment_change_repository.create(InvestmentChangeModel(
-          investment_id=investment.id,
-          change=diff,
-        ))
-      else:
-        last_investment_change.change = diff
-        investment_change_repository.update(last_investment_change.id, last_investment_change)
+      last_investment_change.change = diff
+      investment_change_repository.update(last_investment_change.id, last_investment_change)
 
     return self.redirect("/investment/dashboard")
 
@@ -238,3 +225,9 @@ class InvestmentController(Controller):
 
     date = datetime.now().strftime("%Y-%m-%d")
     return self.download(f"report_{date}.json", json.dumps(dicts))
+
+  def __start_of_week(self) -> str:
+    now = datetime.now()
+    start_of_week = now - timedelta(days=now.weekday())
+    start_of_week_iso = start_of_week.date().isoformat()
+    return start_of_week_iso
