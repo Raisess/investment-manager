@@ -25,8 +25,13 @@ class InvestmentController(Controller):
     user = user_repository.find_one({ "id": user_id })
 
     start_of_week = self.__start_of_week()
+    start_of_month = self.__start_of_month()
     investment_repository = InvestmentRepository()
-    consolidated = investment_repository.consolidated(user_id, start_of_week)
+    consolidated = investment_repository.consolidated(
+      user_id,
+      start_of_week,
+      start_of_month
+    )
 
     args = self.request().args()
     page = int(args.get("page")) if args.get("page") else 1
@@ -47,7 +52,8 @@ class InvestmentController(Controller):
       "investments": investments,
       "invested": round(consolidated.get("invested"), 2),
       "total": round(consolidated.get("total"), 2),
-      "gain": round(consolidated.get("gain"), 2),
+      "week_gains": round(consolidated.get("week_gains"), 2),
+      "month_gains": round(consolidated.get("month_gains"), 2),
       "user": user,
     })
 
@@ -231,3 +237,6 @@ class InvestmentController(Controller):
     start_of_week = now - timedelta(days=now.weekday())
     start_of_week_iso = start_of_week.date().isoformat()
     return start_of_week_iso
+
+  def __start_of_month(self) -> str:
+    return datetime.now().replace(day=1).date().isoformat()
