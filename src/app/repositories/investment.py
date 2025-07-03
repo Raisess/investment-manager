@@ -27,7 +27,7 @@ class InvestmentRepository(Repository):
     page: int = None,
     limit: int = None,
   ) -> list[InvestmentModel]:
-    query = f"""
+    query = """
       SELECT
         main_table.*,
         COALESCE(
@@ -49,7 +49,7 @@ class InvestmentRepository(Repository):
         fk_source.code AS fk_source_code,
         fk_source.logo AS fk_source_logo,
         fk_rentability.name AS fk_rentability_name
-      FROM {self.__table} AS main_table
+      FROM investments AS main_table
         INNER JOIN investment_types AS fk_type ON fk_type.id = type_id
         INNER JOIN investment_sources AS fk_source ON fk_source.id = source_id
         LEFT OUTER JOIN investment_rentabilities AS fk_rentability ON fk_rentability.id = rentability_id
@@ -69,17 +69,12 @@ class InvestmentRepository(Repository):
     })
     return [InvestmentRepository.__format(item) for item in results]
 
-  def consolidated(
-    self,
-    user_id: str,
-    get_week_change_after_date: str,
-    get_month_change_after_date: str,
-  ) -> dict:
+  def consolidated(self, user_id: str, get_week_change_after_date: str) -> dict:
     data = self.__cache.read_json("InvestmentRepository::consolidated")
     if data:
       return data
 
-    query = f"""
+    query = """
       SELECT
         COUNT(1),
         SUM(invested) AS invested,
@@ -95,27 +90,14 @@ class InvestmentRepository(Repository):
              created_at DESC
            LIMIT 1),
           0
-        )) AS week_gains,
-        SUM(COALESCE(
-          (SELECT
-             change
-           FROM investment_changes
-           WHERE
-             investment_id = main_table.id AND
-             created_at >= %(after_month_start_date)s
-           ORDER BY
-             created_at DESC
-           LIMIT 1),
-          0
-        )) AS month_gains
-      FROM {self.__table} AS main_table
+        )) AS week_gains
+      FROM investments AS main_table
       WHERE
         user_id = %(user_id)s;
     """
 
     results = self.__database.query(query, {
       "after_week_start_date": get_week_change_after_date,
-      "after_month_start_date": get_month_change_after_date,
       "user_id": user_id,
     })
     data = results[0]
