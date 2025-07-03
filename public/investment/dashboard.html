@@ -65,9 +65,21 @@
                 <th scope="col">Tipo</th>
                 <th scope="col">Vencimento</th>
                 <th scope="col">Rentabilidade</th>
-                <th scope="col">Investido</th>
-                <th scope="col">Total</th>
-                <th scope="col" title="Variacao semanal do valor total">Var.</th>
+                <th scope="col">
+                  <i class="bi bi-caret-up-fill" scope="click" id="invested" style="cursor: pointer;" onclick="tableOrder(this);"></i>
+                  Investido
+                  <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Valor investido"></i>
+                </th>
+                <th scope="col">
+                  <i class="bi bi-caret-up-fill" scope="click" id="total" style="cursor: pointer;" onclick="tableOrder(this);"></i>
+                  Total
+                  <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Valor investido mais rendimentos"></i>
+                </th>
+                <th scope="col">
+                  <i class="bi bi-caret-up-fill" scope="click" id="week_change" style="cursor: pointer;" onclick="tableOrder(this);"></i>
+                  Var.
+                  <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Variacao semanal do valor total"></i>
+                </th>
                 <th scope="col">Status</th>
                 <th scope="col">Opcoes</th>
               </tr>
@@ -98,9 +110,9 @@
                   {% else %}
                     <td>N/A</td>
                   {% endif %}
-                  <td>R$ {{ investment.invested }}</td>
-                  <td>R$ {{ investment.total }}</td>
-                  <td>R$ {{ investment.fk_change }}</td>
+                  <td scope="invested">R$ {{ investment.invested }}</td>
+                  <td scope="total">R$ {{ investment.total }}</td>
+                  <td scope="week_change">R$ {{ investment.fk_change }}</td>
                   <td>
                     {% if investment.total > investment.invested %}
                       <span class="badge bg-success">Bom</span>
@@ -111,9 +123,9 @@
                     {% endif %}
                   </td>
                   <td>
-                    <a href="/investment/chart/{{ investment.id }}" class="text-secondary" style="text-decoration: none !important;"><i class="bi bi-graph-up"></i></a>
-                    <a href="/investment/edit/{{ investment.id }}" class="ms-2 text-primary" style="text-decoration: none !important;"><i class="bi bi-pencil-square"></i></a>
-                    <a href="/investment/delete/{{ investment.id }}" class="ms-2 text-danger" style="text-decoration: none !important;"><i class="bi bi-trash-fill"></i></a>
+                    <a title="Visualizar grafico" href="/investment/chart/{{ investment.id }}" class="text-secondary" style="text-decoration: none !important;"><i class="bi bi-graph-up"></i></a>
+                    <a title="Editar" href="/investment/edit/{{ investment.id }}" class="ms-2 text-primary" style="text-decoration: none !important;"><i class="bi bi-pencil-square"></i></a>
+                    <a title="Excluir" href="/investment/delete/{{ investment.id }}" class="ms-2 text-danger" style="text-decoration: none !important;"><i class="bi bi-trash-fill"></i></a>
                   </td>
                 </tr>
               {% endfor %}
@@ -139,4 +151,9 @@
   </body>
   <script src="/js/bootstrap.bundle.min.js"></script>
   <script src="/js/file-handler.js"></script>
+  <script src="/js/table-order.js"></script>
+  <script>
+    const tooltipTriggerList = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]")
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+  </script>
 </html>
