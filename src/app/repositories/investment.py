@@ -26,6 +26,7 @@ class InvestmentRepository(Repository):
     get_change_after_date: str = None,
     page: int = None,
     limit: int = None,
+    order_by: str = None,
   ) -> list[InvestmentModel]:
     query = """
       SELECT
@@ -54,8 +55,12 @@ class InvestmentRepository(Repository):
         INNER JOIN investment_sources AS fk_source ON fk_source.id = source_id
         LEFT OUTER JOIN investment_rentabilities AS fk_rentability ON fk_rentability.id = rentability_id
       WHERE user_id = %(user_id)s
-      ORDER BY updated_at DESC
     """
+
+    if order_by:
+      query += f"ORDER BY {order_by} DESC, updated_at DESC"
+    else:
+      query += "ORDER BY updated_at DESC"
 
     if limit:
       query += f"\nLIMIT {limit}"

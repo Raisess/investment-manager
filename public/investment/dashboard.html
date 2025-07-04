@@ -66,17 +66,17 @@
                 <th scope="col">Vencimento</th>
                 <th scope="col">Rentabilidade</th>
                 <th scope="col">
-                  <i class="bi bi-caret-up-fill" scope="click" id="invested" style="cursor: pointer;" onclick="tableOrder(this);"></i>
+                  <i class="bi bi-caret-up-fill" scope="click" id="invested" style="cursor: pointer;" onclick="tableOrder(this, {{ count }});"></i>
                   Investido
                   <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Valor investido"></i>
                 </th>
                 <th scope="col">
-                  <i class="bi bi-caret-up-fill" scope="click" id="total" style="cursor: pointer;" onclick="tableOrder(this);"></i>
+                  <i class="bi bi-caret-up-fill" scope="click" id="total" style="cursor: pointer;" onclick="tableOrder(this, {{ count }});"></i>
                   Total
                   <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Valor investido mais rendimentos"></i>
                 </th>
                 <th scope="col">
-                  <i class="bi bi-caret-up-fill" scope="click" id="week_change" style="cursor: pointer;" onclick="tableOrder(this);"></i>
+                  <i class="bi bi-caret-up-fill" scope="click" id="week_change" style="cursor: pointer;" onclick="tableOrder(this, {{ count }});"></i>
                   Var.
                   <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Variacao semanal do valor total"></i>
                 </th>

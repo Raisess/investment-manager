@@ -32,6 +32,15 @@ class InvestmentController(Controller):
     page = int(args.get("page")) if args.get("page") else 1
     limit = int(args.get("limit")) if args.get("limit") else 15
 
+    order_by = None
+    if args.get("order_by"):
+      map = {
+        "total": "total",
+        "invested": "invested",
+        "week_change": "fk_change",
+      }
+      order_by = map.get(args.get("order_by"))
+
     if limit > 15:
       limit = 15
 
@@ -39,7 +48,7 @@ class InvestmentController(Controller):
     if page > max_page:
       page = max_page
 
-    investments = investment_repository.find(user_id, start_of_week, page, limit)
+    investments = investment_repository.find(user_id, start_of_week, page, limit, order_by)
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
