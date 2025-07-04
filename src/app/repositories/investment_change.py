@@ -19,7 +19,7 @@ class InvestmentChangeRepository(Repository):
     results = self.__database.select(
       table=self.__table,
       limit=1,
-      order_by={ "created_at": "asc" },
+      order_by={ "created_at": "desc" },
       where={
         "investment_id": investment_id,
         "created_at": (">=", after_date)

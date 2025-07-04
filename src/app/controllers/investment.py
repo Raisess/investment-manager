@@ -163,6 +163,7 @@ class InvestmentController(Controller):
       investment_change_repository.create(InvestmentChangeModel(
         investment_id=investment.id,
         change=diff,
+        created_at=start_of_week,
       ))
     else:
       last_investment_change.change = diff
