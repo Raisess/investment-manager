@@ -145,19 +145,24 @@ class InvestmentController(Controller):
     investment.source_id = form.get("source")
     investment.invested = form.get("invested")
     investment.total = form.get("total")
-    investment.maturity = form.get("maturity") if form.get("maturity") != "" else None
-    investment.rentability_id = form.get("rentability_type") if form.get("rentability_type") != "None" else None
-    investment.rentability_number = form.get("rentability_number") if form.get("rentability_type") != "None" and form.get("rentability_number") != "" else None
+
+    if form.get("maturity") != "":
+      investment.maturity = form.get("maturity")
+
+    if form.get("rentability_type") != "None":
+      investment.rentability_id = form.get("rentability_type")
+
+    if form.get("rentability_type") != "None" and form.get("rentability_number") != "":
+      investment.rentability_number = form.get("rentability_number")
 
     investment_repository.update(user_id, id, investment)
 
-    investment_change_repository = InvestmentChangeRepository()
-
+    start_of_week = self.__start_of_week()
     last_diff = last_total_value - last_invested_value
     today_diff = float(investment.total) - float(investment.invested)
     diff = today_diff - last_diff
 
-    start_of_week = self.__start_of_week()
+    investment_change_repository = InvestmentChangeRepository()
     last_investment_change = investment_change_repository.find_one(investment.id, start_of_week)
     if not last_investment_change:
       investment_change_repository.create(InvestmentChangeModel(
