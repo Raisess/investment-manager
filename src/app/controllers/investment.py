@@ -52,11 +52,11 @@ class InvestmentController(Controller):
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
-      "count": consolidated.get("count"),
+      "count": consolidated.get("count") or 0,
       "investments": investments,
-      "invested": round(consolidated.get("invested"), 2),
-      "total": round(consolidated.get("total"), 2),
-      "week_gains": round(consolidated.get("week_gains"), 2),
+      "invested": round(consolidated.get("invested") or 0, 2),
+      "total": round(consolidated.get("total") or 0, 2),
+      "week_gains": round(consolidated.get("week_gains") or 0, 2),
       "user": user,
     })
 
@@ -180,7 +180,7 @@ class InvestmentController(Controller):
         created_at=start_of_week,
       ))
     else:
-      last_investment_change.change = diff
+      last_investment_change.change += diff
       investment_change_repository.update(last_investment_change.id, last_investment_change)
 
     return self.redirect("/investment/dashboard")
