@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard | Investment Manager</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+  <body>
+    <header class="border-bottom">
+      <nav class="navbar navbar-expand-lg py-3">
+        <div class="container px-5">
+          <a class="navbar-brand" href="/"><span class="fw-bolder">Investment Manager</span></a>
+
+          <div class="dropdown text-end">
+            <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="{{ user.picture }}" alt="{{ user.name }}" width="32" height="32" class="rounded-circle">
+            </a>
+
+            <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1" style="">
+              <li><a class="dropdown-item" href="#">Perfil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="/auth/logout">Sair</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="pt-5">
+      <div class="container">
+        <div class="chart-view">
+          <canvas id="chart" style="display: block; box-sizing: border-box;"></canvas>
+        </div>
+      </div>
+    </main>
+  </body>
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const chart = new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: {{ labels }},
+        datasets: {{ datasets }},
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "left",
+          },
+          title: {
+            color: "#000000",
+            display: true,
+            font: {
+              size: 18,
+            },
+            text: "Evolucao semanal do investimento"
+          }
+        }
+      },
+    });
+  </script>
+</html>

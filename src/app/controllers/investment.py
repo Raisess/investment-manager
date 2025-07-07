@@ -26,7 +26,7 @@ class InvestmentController(Controller):
 
     start_of_week = self.__start_of_week()
     investment_repository = InvestmentRepository()
-    consolidated = investment_repository.consolidated(user_id, start_of_week)
+    consolidated = investment_repository.consolidated(user.id, start_of_week)
 
     args = self.request().args()
     page = int(args.get("page")) if args.get("page") else 1
@@ -57,6 +57,47 @@ class InvestmentController(Controller):
       "invested": round(consolidated.get("invested") or 0, 2),
       "total": round(consolidated.get("total") or 0, 2),
       "week_gains": round(consolidated.get("week_gains") or 0, 2),
+      "user": user,
+    })
+
+  def chart(self, id: str) -> str:
+    user_id = self.session().get("user_id")
+    if not user_id:
+      return self.redirect("/")
+
+    user_repository = UserRepository()
+    user = user_repository.find_one({ "id": user_id })
+
+    investment_repository = InvestmentRepository()
+    investements = investment_repository.find(user.id)
+    investements_ids = [investement.id for investement in investements]
+
+    investement_change_repository = InvestmentChangeRepository()
+    investement_changes = investement_change_repository.find(investements_ids)
+
+    labels = []
+    datasets = []
+    for investement in investements:
+      filtered_changes = []
+      for investement_change in investement_changes:
+        if investement_change.investment_id == investement.id:
+          filtered_changes.append(investement_change)
+
+        if investement_change.created_at not in labels:
+          labels.append(investement_change.created_at)
+
+      datasets.append({
+        "label": investement.name,
+        "data": [round(filtered_change.change, 2) for filtered_change in filtered_changes],
+        "hidden": 0 if investement.id == id else 1,
+        "borderColor": f"#{investement.fk_type.color}",
+        "tension": 1,
+      })
+
+    return self.render("/investment/chart", {
+      "labels": labels,
+      "datasets": datasets,
+      "investment": investement,
       "user": user,
     })
 

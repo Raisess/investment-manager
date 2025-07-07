@@ -8,6 +8,11 @@ def dashboard():
   return controller.dashboard()
 
 
+@routes.get("/investment/chart/<id>")
+def chart(id: str):
+  return controller.chart(id)
+
+
 @routes.get("/investment/create")
 def create_view():
   return controller.create_view()
