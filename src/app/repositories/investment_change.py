@@ -12,6 +12,9 @@ class InvestmentChangeRepository(Repository):
     self.__database.insert(self.__table, data.to_dict())
     return data.id
 
+  def create_batch(self, data: list[InvestmentChangeModel]) -> None:
+    self.__database.batch_insert(self.__table, "id", [item.to_dict() for item in data])
+
   def update(self, id: str, new_data: InvestmentChangeModel) -> None:
     self.__database.update(self.__table, { "id": id }, new_data.to_dict())
 

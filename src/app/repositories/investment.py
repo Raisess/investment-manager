@@ -20,6 +20,10 @@ class InvestmentRepository(Repository):
     self.__cache.remove(["InvestmentRepository::consolidated"])
     return data.id
 
+  def create_batch(self, data: list[InvestmentModel]) -> None:
+    self.__database.batch_insert(self.__table, "id", [item.to_dict() for item in data])
+    self.__cache.remove(["InvestmentRepository::consolidated"])
+
   def find(
     self,
     user_id: str,

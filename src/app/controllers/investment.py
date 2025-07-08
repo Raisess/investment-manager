@@ -73,6 +73,7 @@ class InvestmentController(Controller):
     investements_ids = [investement.id for investement in investements]
 
     investement_change_repository = InvestmentChangeRepository()
+    # @TODO: limit by 8 weeks evolution
     investement_changes = investement_change_repository.find(investements_ids)
 
     labels = []
@@ -249,23 +250,38 @@ class InvestmentController(Controller):
       raise Exception("Invalid file content")
 
     investment_repository = InvestmentRepository()
-    for item in json.loads(data):
-      try:
-        investment_repository.create(InvestmentModel(
-          user_id=user_id,
-          id=item.get("id"),
-          type_id=item.get("type_id"),
-          source_id=item.get("source_id"),
-          name=html.escape(item.get("name")),
-          invested=item.get("invested"),
-          total=item.get("total"),
-          maturity=item.get("maturity"),
-          rentability_id=item.get("rentability_id"),
-          rentability_number=item.get("rentability_number"),
-        ))
-      except:
-        print(f"Failed to insert item: {item.get("id")} already exists")
+    investment_change_repository = InvestmentChangeRepository()
 
+    investments = []
+    investments_changes = []
+    for item in json.loads(data):
+      investments.append(InvestmentModel(
+        user_id=user_id,
+        id=item.get("id"),
+        type_id=item.get("type_id"),
+        source_id=item.get("source_id"),
+        name=html.escape(item.get("name")),
+        invested=item.get("invested"),
+        total=item.get("total"),
+        maturity=item.get("maturity"),
+        rentability_id=item.get("rentability_id"),
+        rentability_number=item.get("rentability_number"),
+        created_at=item.get("created_at"),
+        updated_at=item.get("updated_at"),
+      ))
+
+      change_items = item.get("changes")
+      if change_items and len(change_items) > 0:
+        for change_item in change_items:
+          investments_changes.append(InvestmentChangeModel(
+            id=change_item.get("id"),
+            investment_id=change_item.get("investment_id"),
+            change=change_item.get("change"),
+            created_at=change_item.get("created_at"),
+          ))
+
+    investment_repository.create_batch(investments)
+    investment_change_repository.create_batch(investments_changes)
     # @BUGFIX: already refreshing using javascript
     return self.redirect("/investment/dashboard")
 
@@ -276,8 +292,16 @@ class InvestmentController(Controller):
 
     investment_repository = InvestmentRepository()
     investments = investment_repository.find(user_id)
+
+    investment_change_repository = InvestmentChangeRepository()
+    investments_changes = investment_change_repository.find([investment.id for investment in investments])
+
     # @TODO: obfuscate some data: `user_id` and `id`
     dicts = [investment.to_dict() for investment in investments]
+    for item in dicts:
+      item["changes"] = [investment_change.to_dict()
+                         for investment_change in investments_changes
+                         if investment_change.investment_id == item.get("id")]
 
     date = datetime.now().strftime("%Y-%m-%d")
     return self.download(f"report_{date}.json", json.dumps(dicts))
