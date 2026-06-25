@@ -1,5 +1,5 @@
 from __core.plugins.cache.memory import Memory
-from __core.plugins.database.sql.postgresql import PostgreSQL
+from __core.plugins.database.sql.sqlite import SQLite
 from __core.repository import Repository
 
 from app.models import InvestmentRentabilityModel
@@ -7,7 +7,7 @@ from app.models import InvestmentRentabilityModel
 class InvestmentRentabilityRepository(Repository):
   def __init__(self):
     self.__table = "investment_rentabilities"
-    self.__database = PostgreSQL()
+    self.__database = SQLite()
     self.__cache = Memory()
 
   def find(self) -> list[InvestmentRentabilityModel]:

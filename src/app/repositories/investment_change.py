@@ -1,4 +1,4 @@
-from __core.plugins.database.sql.postgresql import PostgreSQL
+from __core.plugins.database.sql.sqlite import SQLite
 from __core.repository import Repository
 
 from app.models import InvestmentChangeModel
@@ -6,7 +6,7 @@ from app.models import InvestmentChangeModel
 class InvestmentChangeRepository(Repository):
   def __init__(self):
     self.__table = "investment_changes"
-    self.__database = PostgreSQL()
+    self.__database = SQLite()
 
   def create(self, data: InvestmentChangeModel) -> str:
     self.__database.insert(self.__table, data.to_dict())

@@ -1,4 +1,4 @@
-from __core.plugins.database.sql.postgresql import PostgreSQL
+from __core.plugins.database.sql.sqlite import SQLite
 from __core.repository import Repository
 
 from app.models import UserModel
@@ -6,7 +6,7 @@ from app.models import UserModel
 class UserRepository(Repository):
   def __init__(self):
     self.__table = "users"
-    self.__database = PostgreSQL()
+    self.__database = SQLite()
 
   def create(self, data: UserModel) -> str:
     self.__database.insert(self.__table, data.to_dict())

@@ -1,5 +1,5 @@
 from __core.plugins.cache.memory import Memory
-from __core.plugins.database.sql.postgresql import PostgreSQL
+from __core.plugins.database.sql.sqlite import SQLite
 from __core.repository import Repository
 
 from app.models import (
@@ -12,7 +12,7 @@ from app.models import (
 class InvestmentRepository(Repository):
   def __init__(self):
     self.__table = "investments"
-    self.__database = PostgreSQL()
+    self.__database = SQLite()
     self.__cache = Memory()
 
   def create(self, data: InvestmentModel) -> str:
