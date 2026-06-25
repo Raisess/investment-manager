@@ -1,15 +1,15 @@
 CREATE TABLE IF NOT EXISTS investments(
-  id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at         TIMESTAMP DEFAULT now(),
-  updated_at         TIMESTAMP DEFAULT now(),
-  user_id            UUID NOT NULL,
-  source_id          UUID NOT NULL,
-  type_id            UUID NOT NULL,
+  id                 VARCHAR(36) PRIMARY KEY UNIQUE NOT NULL,
+  created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  user_id            VARCHAR(36) NOT NULL,
+  source_id          VARCHAR(36) NOT NULL,
+  type_id            VARCHAR(36) NOT NULL,
   name               VARCHAR(50) NOT NULL,
   invested           DECIMAL NOT NULL,
   total              DECIMAL NOT NULL,
   maturity           DATE,
-  rentability_id     UUID,
+  rentability_id     VARCHAR(36),
   rentability_number DECIMAL,
 
   CONSTRAINT fk_user

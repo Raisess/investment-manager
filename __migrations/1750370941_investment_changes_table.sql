@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS investment_changes(
-  id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at         TIMESTAMP DEFAULT now(),
-  investment_id      UUID NOT NULL,
+  id                 VARCHAR(36) PRIMARY KEY UNIQUE NOT NULL,
+  created_at         DATE DEFAULT CURRENT_TIMESTAMP,
+  investment_id      VARCHAR(36) NOT NULL,
   change             DECIMAL NOT NULL,
 
   CONSTRAINT fk_investment
