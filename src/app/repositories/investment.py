@@ -41,7 +41,7 @@ class InvestmentRepository(Repository):
            FROM investment_changes
            WHERE
              investment_id = main_table.id AND
-             created_at >= %(after_date)s
+             created_at >= :after_date
            ORDER BY
              created_at DESC
            LIMIT 1),
@@ -58,7 +58,7 @@ class InvestmentRepository(Repository):
         INNER JOIN investment_types AS fk_type ON fk_type.id = type_id
         INNER JOIN investment_sources AS fk_source ON fk_source.id = source_id
         LEFT OUTER JOIN investment_rentabilities AS fk_rentability ON fk_rentability.id = rentability_id
-      WHERE user_id = %(user_id)s
+      WHERE user_id = :user_id
     """
 
     if order_by:
@@ -85,7 +85,7 @@ class InvestmentRepository(Repository):
 
     query = """
       SELECT
-        COUNT(1),
+        COUNT(1) AS count,
         SUM(invested) AS invested,
         SUM(total) AS total,
         SUM(COALESCE(
@@ -94,7 +94,7 @@ class InvestmentRepository(Repository):
            FROM investment_changes
            WHERE
              investment_id = main_table.id AND
-             created_at >= %(after_week_start_date)s
+             created_at >= :after_week_start_date
            ORDER BY
              created_at DESC
            LIMIT 1),
@@ -102,7 +102,7 @@ class InvestmentRepository(Repository):
         )) AS week_gains
       FROM investments AS main_table
       WHERE
-        user_id = %(user_id)s;
+        user_id = :user_id;
     """
 
     results = self.__database.query(query, {
