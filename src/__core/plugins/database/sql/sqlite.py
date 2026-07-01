@@ -5,6 +5,13 @@ from __core.exceptions import InvalidEnvironmentException, NotConnectedException
 from __core.plugins.database.sql.database import SQLDatabase
 
 class SQLite(SQLDatabase):
+  """
+  @FLAG: USE_SQLITE
+
+  Required ENV's:
+    - SQLITE_DB_PATH: the path where the `.db` file will be saved
+  """
+
   __CONN = None
 
   @staticmethod
@@ -16,7 +23,7 @@ class SQLite(SQLDatabase):
     if not path:
       raise InvalidEnvironmentException("SQLITE_DB_PATH")
 
-    SQLite.__CONN = sqlite3.connect(path)
+    SQLite.__CONN = sqlite3.connect(path, check_same_thread=False)
     def dict_factory(cursor, row):
       fields = [column[0] for column in cursor.description]
       return {key: value for key, value in zip(fields, row)}

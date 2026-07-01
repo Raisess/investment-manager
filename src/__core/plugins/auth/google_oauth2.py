@@ -7,6 +7,7 @@ from __core.exceptions import InvalidEnvironmentException, NotConnectedException
 
 class GoogleOAuth2:
   __STARTED = False
+  __CLIENT = None
 
   @staticmethod
   def Init():
@@ -19,6 +20,9 @@ class GoogleOAuth2:
   def __GetClient(state: str = None) -> any:
     if not GoogleOAuth2.__STARTED:
       raise NotConnectedException("GoogleOAuth2", "USE_GOOGLE_OAUTH2")
+
+    if GoogleOAuth2.__CLIENT is not None:
+      return GoogleOAuth2.__CLIENT
 
     client_id = Env.Get("GOOGLE_OAUTH2_CLIENT_ID")
     if not client_id:
@@ -33,7 +37,7 @@ class GoogleOAuth2:
       raise InvalidEnvironmentException("GOOGLE_OAUTH2_SCOPES")
 
     from google_auth_oauthlib.flow import InstalledAppFlow
-    return InstalledAppFlow.from_client_config(
+    GoogleOAuth2.__CLIENT = InstalledAppFlow.from_client_config(
       client_config={
         "web": {
           "client_id": client_id,
@@ -45,6 +49,7 @@ class GoogleOAuth2:
       scopes=scopes,
       state=state
     )
+    return GoogleOAuth2.__CLIENT
 
   def get_authorization_url(self, redirect_uri: str, state: str = None) -> str:
     from google_auth_oauthlib.flow import InstalledAppFlow
