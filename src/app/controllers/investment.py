@@ -69,21 +69,26 @@ class InvestmentController(Controller):
     user = user_repository.find_one({ "id": user_id })
 
     investment_repository = InvestmentRepository()
-    investement_change_repository = InvestmentChangeRepository()
-
     investements = investment_repository.find(user.id)
+    investements_ids = [investement.id for investement in investements]
+
+    investement_change_repository = InvestmentChangeRepository()
+    investement_changes = investement_change_repository.find(investements_ids)
 
     labels = []
     datasets = []
     for investement in investements:
-      investement_changes = investement_change_repository.find(investement.id)
+      filtered_changes = []
       for investement_change in investement_changes:
+        if investement_change.investment_id == investement.id:
+          filtered_changes.append(investement_change)
+
         if investement_change.created_at not in labels:
           labels.append(investement_change.created_at)
 
       datasets.append({
         "label": investement.name,
-        "data": [round(investement_change.change, 2) for investement_change in investement_changes],
+        "data": [round(filtered_change.change, 2) for filtered_change in filtered_changes],
         "hidden": 0 if investement.id == id else 1,
         "borderColor": f"#{investement.fk_type.color}",
         "tension": 1,
@@ -288,12 +293,15 @@ class InvestmentController(Controller):
     investment_change_repository = InvestmentChangeRepository()
     investments_changes = investment_change_repository.find([investment.id for investment in investments])
 
-    dicts = [investment.to_dict() for investment in investments]
-    for item in dicts:
+    dicts = []
+    for investment in investments:
+      item = investment.to_dict()
       item["user_id"] = None
       item["changes"] = [investment_change.to_dict()
                          for investment_change in investments_changes
                          if investment_change.investment_id == item.get("id")]
+
+      dicts.append(item)
 
     date = datetime.now().strftime("%Y-%m-%d")
     return self.download(f"report_{date}.json", json.dumps(dicts))
