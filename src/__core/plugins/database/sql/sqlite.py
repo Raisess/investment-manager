@@ -1,9 +1,11 @@
 import sqlite3
+from threading import Lock
 
 from __core.env import Env
 from __core.exceptions import InvalidEnvironmentException, NotConnectedException
 from __core.plugins.database.sql.database import SQLDatabase
 
+# TODO: add mutex lock
 class SQLite(SQLDatabase):
   """
   @FLAG: USE_SQLITE
@@ -13,6 +15,7 @@ class SQLite(SQLDatabase):
   """
 
   __CONN = None
+  __LOCK: Lock = None
 
   @staticmethod
   def Init():
@@ -29,21 +32,30 @@ class SQLite(SQLDatabase):
       return {key: value for key, value in zip(fields, row)}
 
     SQLite.__CONN.row_factory = dict_factory
+    SQLite.__LOCK = Lock()
 
   def void_query(self, sql: str, values: dict[str, any] | tuple[any] | None = []) -> None:
     if not SQLite.__CONN:
       raise NotConnectedException("SQLite", "USE_SQLITE")
 
+    if not SQLite.__LOCK.acquire():
+      raise Exception("Not able to acquire the lock")
+
     cursor = SQLite.__CONN.cursor()
     cursor.execute(sql, values)
     SQLite.__CONN.commit()
+    SQLite.__LOCK.release()
 
   def query(self, sql: str, values: dict[str, any] | tuple[any] | None = []) -> list[dict]:
     if not SQLite.__CONN:
       raise NotConnectedException("SQLite", "USE_SQLITE")
 
+    if not SQLite.__LOCK.acquire():
+      raise Exception("Not able to acquire the lock")
+
     cursor = SQLite.__CONN.cursor()
     result = cursor.execute(sql, values)
+    SQLite.__LOCK.release()
     return result.fetchall()
 
   def plain(self, sql: str, values: dict[str, any] | tuple[any] | None = []) -> list[any]:
