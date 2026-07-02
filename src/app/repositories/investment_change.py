@@ -30,11 +30,12 @@ class InvestmentChangeRepository(Repository):
     )
     return InvestmentChangeRepository.__format(results[0]) if len(results) == 1 else None
 
-  def find(self, investment_ids: list[str]) -> list[InvestmentChangeModel]:
+  def find(self, investment_id: str) -> list[InvestmentChangeModel]:
     results = self.__database.select(
       table=self.__table,
       order_by={ "created_at": "asc" },
-      where={ "investment_id": investment_ids },
+      where={ "investment_id": investment_id },
+      limit=10,
     )
     return [InvestmentChangeRepository.__format(item) for item in results]
 
