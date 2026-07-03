@@ -5,7 +5,6 @@ from __core.env import Env
 from __core.exceptions import InvalidEnvironmentException, NotConnectedException
 from __core.plugins.database.sql.database import SQLDatabase
 
-# TODO: add mutex lock
 class SQLite(SQLDatabase):
   """
   @FLAG: USE_SQLITE
