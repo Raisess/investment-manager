@@ -33,13 +33,14 @@ class InvestmentController(Controller):
     limit = int(args.get("limit")) if args.get("limit") else 15
 
     order_by = None
-    if args.get("order_by"):
-      map = {
+    order_by_arg = args.get("order") or args.get("order_by")
+    if order_by_arg:
+      _map = {
         "total": "total",
         "invested": "invested",
         "week_change": "fk_change",
       }
-      order_by = map.get(args.get("order_by"))
+      order_by = _map.get(order_by_arg)
 
     if limit > 15:
       limit = 15
