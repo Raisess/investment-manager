@@ -6,6 +6,7 @@ from waitress import serve
 from __core.env import Env
 from __core.server import Server
 
+# TODO: fix logger
 if __name__ == "__main__":
   server = Server()
   logger = logging.getLogger("waitress")
