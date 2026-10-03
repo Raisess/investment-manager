@@ -133,9 +133,9 @@ class InvestmentRepository(Repository):
       updated_at=str(data.get("updated_at")),
       user_id=data.get("user_id"),
       name=data.get("name"),
+      maturity=str(data.get("maturity")) if data.get("maturity") else None,
       invested=round(float(data.get("invested")), 2),
       total=round(float(data.get("total")), 2),
-      maturity=str(data.get("maturity")) if data.get("maturity") else None,
 
       fk_change=round(float(data.get("fk_change")) if data.get("fk_change") else 0, 2),
 
