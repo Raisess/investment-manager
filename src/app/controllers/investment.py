@@ -21,16 +21,14 @@ class InvestmentController(Controller):
     if not user_id:
       return self.redirect("/")
 
-    user_repository = UserRepository()
-    user = user_repository.find_one({ "id": user_id })
-
-    start_of_week = self.__start_of_week()
-    investment_repository = InvestmentRepository()
-    consolidated = investment_repository.consolidated(user.id, start_of_week)
+    # --- Setup parameters ---
 
     args = self.request().args()
     page = int(args.get("page")) if args.get("page") else 1
     limit = int(args.get("limit")) if args.get("limit") else 15
+
+    start_of_week = self.__start_of_week()
+    start_of_month = self.__start_of_month()
 
     order_by = None
     order_by_arg = args.get("order") or args.get("order_by")
@@ -41,6 +39,16 @@ class InvestmentController(Controller):
         "week_change": "fk_change",
       }
       order_by = _map.get(order_by_arg)
+
+    # --- Setup parameters ---
+
+    user_repository = UserRepository()
+    user = user_repository.find_one({ "id": user_id })
+
+    print(start_of_month)
+    investment_repository = InvestmentRepository()
+    consolidated = investment_repository.consolidated(user.id, start_of_week, start_of_month)
+    print(consolidated)
 
     if limit > 15:
       limit = 15
@@ -57,6 +65,7 @@ class InvestmentController(Controller):
       "investments": investments,
       "invested": round(consolidated.get("invested") or 0, 2),
       "total": round(consolidated.get("total") or 0, 2),
+      "monthly_gains": round(consolidated.get("monthly_gains") or 0, 2),
       "week_gains": round(consolidated.get("week_gains") or 0, 2),
       "user": user,
     })
@@ -91,8 +100,7 @@ class InvestmentController(Controller):
         "label": investement.name,
         "data": [round(filtered_change.change, 2) for filtered_change in filtered_changes],
         "hidden": 0 if investement.id == id else 1,
-        "borderColor": f"#{investement.fk_type.color}",
-        "tension": 1,
+        "backgroundColor": f"#{investement.fk_type.color}",
       })
 
     return self.render("/investment/chart", {
@@ -308,7 +316,14 @@ class InvestmentController(Controller):
     return self.download(f"report_{date}.json", json.dumps(dicts))
 
   def __start_of_week(self) -> str:
-    now = datetime.now()
+    now = datetime.utcnow()
     start_of_week = now - timedelta(days=now.weekday())
     start_of_week_iso = start_of_week.date().isoformat()
     return start_of_week_iso
+
+  def __start_of_month(self) -> str:
+    now = datetime.utcnow()
+    # @NOTE: Sum 1 because 2026-10-05 - 05 days is 2026-10-00 == 2026-09-30 which is wrong
+    start_of_month = now - timedelta(days=now.day) + timedelta(days=1)
+    start_of_month_iso = start_of_month.date().isoformat()
+    return start_of_month_iso

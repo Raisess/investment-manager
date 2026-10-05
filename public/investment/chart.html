@@ -30,7 +30,7 @@
     <main class="pt-5">
       <div class="container">
         <div class="chart-view">
-          <canvas id="chart" style="display: block; box-sizing: border-box;"></canvas>
+          <canvas id="barChart" style="display: block; box-sizing: border-box;"></canvas>
         </div>
       </div>
     </main>
@@ -38,8 +38,8 @@
   <script src="/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const chart = new Chart(document.getElementById("chart"), {
-      type: "line",
+    const barChart = new Chart(document.getElementById("barChart"), {
+      type: "bar",
       data: {
         labels: {{ labels }},
         datasets: {{ datasets }},
@@ -48,7 +48,7 @@
         responsive: true,
         plugins: {
           legend: {
-            position: "left",
+            position: "bottom",
           },
           title: {
             color: "#000000",

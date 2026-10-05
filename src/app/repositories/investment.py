@@ -78,7 +78,7 @@ class InvestmentRepository(Repository):
     })
     return [InvestmentRepository.__format(item) for item in results]
 
-  def consolidated(self, user_id: str, get_week_change_after_date: str) -> dict:
+  def consolidated(self, user_id: str, start_of_week_date: str, start_of_month_date: str) -> dict:
     data = self.__cache.read_json("InvestmentRepository::consolidated")
     if data:
       return data
@@ -94,7 +94,19 @@ class InvestmentRepository(Repository):
            FROM investment_changes
            WHERE
              investment_id = main_table.id AND
-             created_at >= :after_week_start_date
+             created_at >= :start_of_month_date
+           ORDER BY
+             created_at DESC
+           LIMIT 1),
+          0
+        )) AS monthly_gains,
+        SUM(COALESCE(
+          (SELECT
+             change
+           FROM investment_changes
+           WHERE
+             investment_id = main_table.id AND
+             created_at >= :start_of_week_date
            ORDER BY
              created_at DESC
            LIMIT 1),
@@ -106,7 +118,8 @@ class InvestmentRepository(Repository):
     """
 
     results = self.__database.query(query, {
-      "after_week_start_date": get_week_change_after_date,
+      "start_of_week_date": start_of_week_date,
+      "start_of_month_date": start_of_month_date,
       "user_id": user_id,
     })
     data = results[0]
