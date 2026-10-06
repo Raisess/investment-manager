@@ -45,10 +45,8 @@ class InvestmentController(Controller):
     user_repository = UserRepository()
     user = user_repository.find_one({ "id": user_id })
 
-    print(start_of_month)
     investment_repository = InvestmentRepository()
     consolidated = investment_repository.consolidated(user.id, start_of_week, start_of_month)
-    print(consolidated)
 
     if limit > 15:
       limit = 15
@@ -85,6 +83,7 @@ class InvestmentController(Controller):
     investement_change_repository = InvestmentChangeRepository()
     investement_changes = investement_change_repository.find(investements_ids)
 
+    # @FIXME: here is a bug mounting date labels for missing datasets
     labels = []
     datasets = []
     for investement in investements:

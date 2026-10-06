@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS investment_changes(
   id                 VARCHAR(36) PRIMARY KEY UNIQUE NOT NULL,
-  created_at         DATE DEFAULT CURRENT_TIMESTAMP,
+  created_at         DATE NOT NULL,
   investment_id      VARCHAR(36) NOT NULL,
   change             DECIMAL NOT NULL,
 

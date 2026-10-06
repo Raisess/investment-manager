@@ -18,6 +18,7 @@ class InvestmentChangeRepository(Repository):
   def update(self, id: str, new_data: InvestmentChangeModel) -> None:
     self.__database.update(self.__table, { "id": id }, new_data.to_dict())
 
+  # @NOTE: always get the start of the week change to try to update
   def find_one(self, investment_id: str, after_date: str) -> InvestmentChangeModel | None:
     results = self.__database.select(
       table=self.__table,
