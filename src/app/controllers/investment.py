@@ -56,6 +56,7 @@ class InvestmentController(Controller):
       page = max_page
 
     investments = investment_repository.find(user_id, start_of_week, page, limit, order_by)
+    # @TODO: add all time total gains that are invested minus total from consolidated
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
@@ -81,6 +82,7 @@ class InvestmentController(Controller):
     investements_ids = [investement.id for investement in investements]
 
     investement_change_repository = InvestmentChangeRepository()
+    # TODO: need to limit it to a limit that is visually good
     investement_changes = investement_change_repository.find(investements_ids)
 
     labels = []
