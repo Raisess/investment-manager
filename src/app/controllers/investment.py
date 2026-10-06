@@ -83,21 +83,28 @@ class InvestmentController(Controller):
     investement_change_repository = InvestmentChangeRepository()
     investement_changes = investement_change_repository.find(investements_ids)
 
-    # @FIXME: here is a bug mounting date labels for missing datasets
     labels = []
-    datasets = []
     for investement in investements:
       filtered_changes = []
       for investement_change in investement_changes:
-        if investement_change.investment_id == investement.id:
-          filtered_changes.append(investement_change)
-
         if investement_change.created_at not in labels:
           labels.append(investement_change.created_at)
 
+    datasets = []
+    for investement in investements:
+      filtered_changes_by_date = {}
+      for investement_change in investement_changes:
+        if investement_change.investment_id == investement.id:
+          filtered_changes_by_date[investement_change.created_at] = round(investement_change.change, 2)
+
+      for label in labels:
+        if not filtered_changes_by_date.get(label):
+          filtered_changes_by_date[label] = 0
+
+      filtered_changes_by_date = dict(sorted(filtered_changes_by_date.items()))
       datasets.append({
         "label": investement.name,
-        "data": [round(filtered_change.change, 2) for filtered_change in filtered_changes],
+        "data": list(filtered_changes_by_date.values()),
         "hidden": 0 if investement.id == id else 1,
         "backgroundColor": f"#{investement.fk_type.color}",
       })
