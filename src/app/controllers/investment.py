@@ -85,37 +85,56 @@ class InvestmentController(Controller):
     # TODO: need to limit it to a limit that is visually good
     investement_changes = investement_change_repository.find(investements_ids)
 
-    labels = []
-    for investement in investements:
-      filtered_changes = []
-      for investement_change in investement_changes:
-        if investement_change.created_at not in labels:
-          labels.append(investement_change.created_at)
+    bar_labels = []
+    for investement_change in investement_changes:
+      if investement_change.created_at not in bar_labels:
+        bar_labels.append(investement_change.created_at)
 
-    datasets = []
+    bar_datasets = []
+    doughnut_data = {}
     for investement in investements:
       filtered_changes_by_date = {}
       for investement_change in investement_changes:
         if investement_change.investment_id == investement.id:
           filtered_changes_by_date[investement_change.created_at] = round(investement_change.change, 2)
 
-      for label in labels:
+      for label in bar_labels:
         if not filtered_changes_by_date.get(label):
           filtered_changes_by_date[label] = 0
 
       filtered_changes_by_date = dict(sorted(filtered_changes_by_date.items()))
-      datasets.append({
+      bar_datasets.append({
         "label": investement.name,
         "data": list(filtered_changes_by_date.values()),
         "hidden": 0 if investement.id == id else 1,
         "backgroundColor": f"#{investement.fk_type.color}",
       })
 
+      if not doughnut_data.get(investement.fk_type.name):
+        doughnut_data[investement.fk_type.name] = {
+          "color": f"#{investement.fk_type.color}",
+          "total": investement.total,
+        }
+      else:
+        doughnut_data[investement.fk_type.name]["total"] += investement.total
+
+    doughnut_labels = list(doughnut_data.keys())
+    doughnut_datasets = [{ "data": [], "backgroundColor": [] }]
+    for item in list(doughnut_data.values()):
+      doughnut_datasets[0]["backgroundColor"].append(item["color"])
+      doughnut_datasets[0]["data"].append(item["total"])
+
     return self.render("/investment/chart", {
-      "labels": labels,
-      "datasets": datasets,
       "investment": investement,
       "user": user,
+      "bar": {
+        "labels": bar_labels,
+        "datasets": bar_datasets,
+      },
+      "doughnut": {
+        "labels": doughnut_labels,
+        "datasets": doughnut_datasets,
+      },
     })
 
   def create_view(self) -> str:

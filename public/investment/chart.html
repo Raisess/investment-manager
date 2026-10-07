@@ -27,10 +27,13 @@
         </div>
       </nav>
     </header>
-    <main class="pt-5">
-      <div class="container">
-        <div class="chart-view">
+    <main class="pt-5 pb-5">
+      <div class="container d-flex flex-row gap-2">
+        <div class="container">
           <canvas id="barChart" style="display: block; box-sizing: border-box;"></canvas>
+        </div>
+        <div class="">
+          <canvas id="doughnutChart" style="display: block; box-sizing: border-box;"></canvas>
         </div>
       </div>
     </main>
@@ -38,11 +41,35 @@
   <script src="/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    const doughnutChart = new Chart(document.getElementById("doughnutChart"), {
+      type: "doughnut",
+      data: {
+        labels: {{ doughnut.labels }},
+        datasets: {{ doughnut.datasets }},
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+          },
+          title: {
+            color: "#000000",
+            display: true,
+            font: {
+              size: 18,
+            },
+            text: "Segregacao por tipos de investimento"
+          }
+        }
+      },
+    });
+
     const barChart = new Chart(document.getElementById("barChart"), {
       type: "bar",
       data: {
-        labels: {{ labels }},
-        datasets: {{ datasets }},
+        labels: {{ bar.labels }},
+        datasets: {{ bar.datasets }},
       },
       options: {
         responsive: true,
