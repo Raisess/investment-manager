@@ -56,7 +56,6 @@ class InvestmentController(Controller):
       page = max_page
 
     investments = investment_repository.find(user_id, start_of_week, page, limit, order_by)
-    # @TODO: add all time total gains that are invested minus total from consolidated
     return self.render("/investment/dashboard", {
       "limit": limit,
       "page": page,
@@ -64,6 +63,7 @@ class InvestmentController(Controller):
       "investments": investments,
       "invested": round(consolidated.get("invested") or 0, 2),
       "total": round(consolidated.get("total") or 0, 2),
+      "total_gains": round((consolidated.get("total") or 0) - (consolidated.get("invested") or 0), 2),
       "monthly_gains": round(consolidated.get("monthly_gains") or 0, 2),
       "week_gains": round(consolidated.get("week_gains") or 0, 2),
       "user": user,
