@@ -17,12 +17,14 @@ class InvestmentRepository(Repository):
 
   def create(self, data: InvestmentModel) -> str:
     self.__database.insert(self.__table, data.to_dict())
-    self.__cache.remove(["InvestmentRepository::consolidated"])
+    self.__cache.remove([f"InvestmentRepository::consolidated::{data.user_id}"])
     return data.id
 
   def create_batch(self, data: list[InvestmentModel]) -> None:
     self.__database.batch_insert(self.__table, "id", [item.to_dict() for item in data])
-    self.__cache.remove(["InvestmentRepository::consolidated"])
+
+    user_id = data[0].user_id
+    self.__cache.remove([f"InvestmentRepository::consolidated::{user_id}"])
 
   def find(
     self,
@@ -79,7 +81,7 @@ class InvestmentRepository(Repository):
     return [InvestmentRepository.__format(item) for item in results]
 
   def consolidated(self, user_id: str, start_of_week_date: str, start_of_month_date: str) -> dict:
-    data = self.__cache.read_json("InvestmentRepository::consolidated")
+    data = self.__cache.read_json(f"InvestmentRepository::consolidated::{user_id}")
     if data:
       return data
 
@@ -123,7 +125,7 @@ class InvestmentRepository(Repository):
       "user_id": user_id,
     })
     data = results[0]
-    self.__cache.write_json("InvestmentRepository::consolidated", data)
+    self.__cache.write_json(f"InvestmentRepository::consolidated::{user_id}", data)
     return data
 
   def find_one(self, user_id: str, id: str) -> InvestmentModel | None:
@@ -132,11 +134,11 @@ class InvestmentRepository(Repository):
 
   def update(self, user_id: str, id: str, new_data: InvestmentModel) -> None:
     self.__database.update(self.__table, { "id": id, "user_id": user_id }, new_data.to_dict())
-    self.__cache.remove(["InvestmentRepository::consolidated"])
+    self.__cache.remove([f"InvestmentRepository::consolidated::{user_id}"])
 
   def remove_one(self, user_id: str, id: str) -> None:
     self.__database.delete(self.__table, { "id": id, "user_id": user_id })
-    self.__cache.remove(["InvestmentRepository::consolidated"])
+    self.__cache.remove([f"InvestmentRepository::consolidated::{user_id}"])
 
   @staticmethod
   def __format(data: dict) -> InvestmentModel:
