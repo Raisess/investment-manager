@@ -92,14 +92,11 @@ class InvestmentRepository(Repository):
         SUM(total) AS total,
         SUM(COALESCE(
           (SELECT
-             change
+             SUM(change)
            FROM investment_changes
            WHERE
              investment_id = main_table.id AND
-             created_at >= :start_of_month_date
-           ORDER BY
-             created_at DESC
-           LIMIT 1),
+             created_at >= :start_of_month_date),
           0
         )) AS monthly_gains,
         SUM(COALESCE(
